@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.26430.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KLogger", "KLogger\KLogger.vcxproj", "{25AAD2AC-097D-4C17-9994-852A7D2FAACA}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KDLL", "KDLL\KDLL.vcxproj", "{3ACDCFCF-F055-40B2-8E0A-FE5C4503871E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{25AAD2AC-097D-4C17-9994-852A7D2FAACA}.Release|x64.Build.0 = Release|x64
 		{25AAD2AC-097D-4C17-9994-852A7D2FAACA}.Release|x86.ActiveCfg = Release|Win32
 		{25AAD2AC-097D-4C17-9994-852A7D2FAACA}.Release|x86.Build.0 = Release|Win32
+		{3ACDCFCF-F055-40B2-8E0A-FE5C4503871E}.Debug|x64.ActiveCfg = Debug|x64
+		{3ACDCFCF-F055-40B2-8E0A-FE5C4503871E}.Debug|x64.Build.0 = Debug|x64
+		{3ACDCFCF-F055-40B2-8E0A-FE5C4503871E}.Debug|x86.ActiveCfg = Debug|Win32
+		{3ACDCFCF-F055-40B2-8E0A-FE5C4503871E}.Debug|x86.Build.0 = Debug|Win32
+		{3ACDCFCF-F055-40B2-8E0A-FE5C4503871E}.Release|x64.ActiveCfg = Release|x64
+		{3ACDCFCF-F055-40B2-8E0A-FE5C4503871E}.Release|x64.Build.0 = Release|x64
+		{3ACDCFCF-F055-40B2-8E0A-FE5C4503871E}.Release|x86.ActiveCfg = Release|Win32
+		{3ACDCFCF-F055-40B2-8E0A-FE5C4503871E}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

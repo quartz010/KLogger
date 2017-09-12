@@ -1,0 +1,4 @@
+; Export.def : µ¼³öDLLº¯Êý
+LIBRARY KDLL
+EXPORTS
+	fnAdd @ 1 

@@ -2,6 +2,7 @@
 #include <string.h>
 #include <wchar.h>
 
+
 HANDLE hOutput;
 BOOL isInited = FALSE;
 

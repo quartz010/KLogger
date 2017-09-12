@@ -24,10 +24,7 @@
     <ClInclude Include="targetver.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="KDLL.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="resource.h">
+    <ClInclude Include="KLogger_DLL.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -35,16 +32,11 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="KDLL.cpp">
+    <ClCompile Include="KLogger_DLL.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="dllmain.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Export.def">
-      <Filter>源文件</Filter>
-    </None>
   </ItemGroup>
 </Project>

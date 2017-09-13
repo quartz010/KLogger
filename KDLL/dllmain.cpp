@@ -12,9 +12,12 @@ BOOL APIENTRY DllMain( HMODULE hModule,					//当前 DLL 的句柄
 	switch (ul_reason_for_call)			//dll 被load的原因
 	{
 	case DLL_PROCESS_ATTACH:
+		printf("\n DLL Load SUCCESSFULLY! \n");
+		
+		initCondition();
+		count = 0;
+		
 		hInst = hModule;
-		printf("DLL Load SUCCESSFULLY!\n");
-
 		break;
 	case DLL_THREAD_ATTACH:
 	case DLL_THREAD_DETACH:

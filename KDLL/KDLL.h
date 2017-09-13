@@ -17,4 +17,6 @@
 
 extern KDLL_API int nKDLL;
 
-INT __stdcall fnAdd(int, int);
+INT _stdcall fnAdd(int, int);
+void initCondition(void);	//环境初始化函数
+extern int count;

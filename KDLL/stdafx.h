@@ -11,6 +11,7 @@
 // Windows м╥нд╪Ч: 
 #include <windows.h>
 #include <stdio.h>
+#include <process.h>
 
 
 

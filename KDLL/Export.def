@@ -2,3 +2,5 @@
 LIBRARY KDLL
 EXPORTS
 	fnAdd @ 1 
+	fnSetKbHook @ 2
+	fnRemoveKbHook @ 3

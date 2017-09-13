@@ -32,22 +32,26 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		
 		if (hHookDll)
 		{	
+			typedef VOID(_stdcall* LPFNDLLFUNC)(VOID);
+			typedef INT(_stdcall* LPFNDLLFUNC1)(INT, INT);
 
-			INT(__stdcall *appFunc)(int, int); //这里定义一个函数指针，也可以通过 typedef 定义新类型
 
-			(FARPROC&)appFunc = GetProcAddress(hHookDll, "fnAdd");
+			//INT(_stdcall *appFunc)(INT, INT); //这里定义一个函数指针，也可以通过 typedef 定义新类型
+
+			LPFNDLLFUNC lpfnDllFunc = (LPFNDLLFUNC) GetProcAddress(hHookDll, "fnSetKbHook");
+			
+			//获得动态库函数指针
 			//(FARPROC&)appFunc = GetProcAddress(hHookDll, LPCSTR(MAKEINTRESOURCE(1)));
 
-			if (appFunc)
+			if (lpfnDllFunc)
 			{
 
-				INT ret = appFunc(5, 3);
-			
-				TCHAR retBuf[16] = { 0 };
-				wsprintf(retBuf, L"%d", ret);	//用之前成了sprintf 导致乱码
+				//TCHAR retBuf[16] = { 0 };
+				//INT ret = appFunc(5, 3);				
+				//wsprintf(retBuf, L"%d", ret);	//用之前成了sprintf 导致乱码
+				//MessageBox(NULL, retBuf, L"warning", MB_OK);
 
-				MessageBox(NULL, retBuf, L"warning", MB_OK);
-
+				lpfnDllFunc();
 			}
 			else
 			{
@@ -67,6 +71,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	}
 	catch (const std::exception& e)
 	{	
+		USES_CONVERSION;
+
 		TCHAR textBuf[64];
 		
 		FreeLibrary(hHookDll);
@@ -74,7 +80,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		MessageBox(GetDesktopWindow(), textBuf, L"warning",  MB_OK);
 	}
-#ifndef KLOG_DEBUG
 	MSG msg;
 	while (GetMessage(&msg, 0, 0, 0))
 	{
@@ -82,5 +87,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		DispatchMessage(&msg);
 	};
 	return msg.wParam;
+#ifndef KLOG_DEBUG
 #endif
 }

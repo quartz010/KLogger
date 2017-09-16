@@ -80,13 +80,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		MessageBox(GetDesktopWindow(), textBuf, L"warning",  MB_OK);
 	}
-	MSG msg;
+				
+	MSG msg;	//保持应用运行 (保持句柄这样DLL 不会被回收)
 	while (GetMessage(&msg, 0, 0, 0))
 	{
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	};
 	return msg.wParam;
+
 #ifndef KLOG_DEBUG
 #endif
 }

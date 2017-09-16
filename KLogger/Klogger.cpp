@@ -35,11 +35,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			typedef VOID(_stdcall* LPFNDLLFUNC)(VOID);
 			typedef INT(_stdcall* LPFNDLLFUNC1)(INT, INT);
 
+			DebugPrint(L"DLL loaded!");
 
 			//INT(_stdcall *appFunc)(INT, INT); //这里定义一个函数指针，也可以通过 typedef 定义新类型
 
 			LPFNDLLFUNC lpfnDllFunc = (LPFNDLLFUNC) GetProcAddress(hHookDll, "fnSetKbHook");
 			
+			//LPFNDLLFUNC lpfnDllFunc = (LPFNDLLFUNC)GetProcAddress(hHookDll,
+			//										LPCSTR(MAKEINTRESOURCE(2)));
+
 			//获得动态库函数指针
 			//(FARPROC&)appFunc = GetProcAddress(hHookDll, LPCSTR(MAKEINTRESOURCE(1)));
 
@@ -76,9 +80,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		TCHAR textBuf[64];
 		
 		FreeLibrary(hHookDll);
-		wsprintf(textBuf, L"Load DLL FAILED! \n%s", CA2W(e.what()));
+		//wsprintf(textBuf, L"Load DLL FAILED! \n%s", CA2W(e.what()));
 
-		MessageBox(GetDesktopWindow(), textBuf, L"warning",  MB_OK);
+		MessageBox(GetDesktopWindow(), L"Load DLL FAILED", L"warning",  MB_OK);
 	}
 				
 	MSG msg;	//保持应用运行 (保持句柄这样DLL 不会被回收)

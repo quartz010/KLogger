@@ -21,6 +21,9 @@
     <ClCompile Include="console.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="AuxFunc.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Klogger.h">
@@ -30,6 +33,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="console.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AuxFunc.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

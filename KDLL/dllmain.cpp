@@ -1,7 +1,4 @@
 // dllmain.cpp : 定义 DLL 应用程序的入口点。
-#include "stdafx.h"
-#include "KDLL.h"
-
 //
 //                       _oo0oo_
 //                      o8888888o
@@ -29,6 +26,10 @@
 //
 //			很奇怪,全局钩子不报毒了？？？
 
+#include "stdafx.h"
+#include "KDLL.h"
+
+
 HINSTANCE hInst;
 
 BOOL APIENTRY DllMain( HMODULE hModule,					//当前 DLL 的句柄
@@ -39,7 +40,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,					//当前 DLL 的句柄
 	switch (ul_reason_for_call)			//dll 被load的原因
 	{
 	case DLL_PROCESS_ATTACH:
-		wprintf(L"\n DLL Load SUCCESSFULLY! \n");
+		wprintf(L"DLL Load SUCCESSFULLY! \n");
 		
 		initCondition();
 		count = 0;
